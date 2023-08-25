@@ -1,0 +1,78 @@
+# Overwrite parameters here
+
+# parameters: {...}
+parameters:
+  rook_mini:
+    storage:
+      clusterSpec:
+        nodes:
+          - name: cobra-11k3
+            devices:
+              - name: sda
+          - name: cobra-573j
+            devices:
+              - name: sda
+          - name: cobra-99b0
+            devices:
+              - name: sda
+
+      blockPools:
+        - name: ceph-blockpool
+          spec:
+            failureDomain: host
+            replicated:
+              size: 3
+          storageClass:
+            enabled: true
+            name: ceph-block
+            isDefault: true
+            reclaimPolicy: Delete
+            allowVolumeExpansion: true
+            parameters:
+              imageFormat: '2'
+              imageFeatures: layering
+              csi.storage.k8s.io/provisioner-secret-name: rook-csi-rbd-provisioner
+              csi.storage.k8s.io/provisioner-secret-namespace: ${rook_mini:namespace:cluster}
+              csi.storage.k8s.io/controller-expand-secret-name: rook-csi-rbd-provisioner
+              csi.storage.k8s.io/controller-expand-secret-namespace: ${rook_mini:namespace:cluster}
+              csi.storage.k8s.io/node-stage-secret-name: rook-csi-rbd-node
+              csi.storage.k8s.io/node-stage-secret-namespace: ${rook_mini:namespace:cluster}
+              csi.storage.k8s.io/fstype: ext4
+
+      fileSystems:
+        - name: ceph-fs
+          spec:
+            metadataPool:
+              replicated:
+                size: 3
+            dataPools:
+              - failureDomain: host
+                replicated:
+                  size: 3
+                name: data0
+            metadataServer:
+              activeCount: 1
+              activeStandby: true
+              resources:
+                limits:
+                  cpu: null
+                  memory: 2Gi
+                requests:
+                  cpu: 500m
+                  memory: 512Mi
+              priorityClassName: system-cluster-critical
+          storageClass:
+            enabled: true
+            isDefault: false
+            name: ceph-file
+            pool: data0
+            reclaimPolicy: Delete
+            allowVolumeExpansion: true
+            parameters:
+              csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+              csi.storage.k8s.io/provisioner-secret-namespace: ${rook_mini:namespace:cluster}
+              csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+              csi.storage.k8s.io/controller-expand-secret-namespace: ${rook_mini:namespace:cluster}
+              csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+              csi.storage.k8s.io/node-stage-secret-namespace: ${rook_mini:namespace:cluster}
+              csi.storage.k8s.io/fstype: ext4

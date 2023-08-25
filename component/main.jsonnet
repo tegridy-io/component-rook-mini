@@ -7,4 +7,20 @@ local params = inv.parameters.rook_mini;
 
 // Define outputs below
 {
+  '00_namespace': [
+    kube.Namespace(params.namespace.operator) + {
+      metadata+: {
+        labels+: {
+          'pod-security.kubernetes.io/enforce': 'privileged',
+        },
+      },
+    },
+    kube.Namespace(params.namespace.cluster) + {
+      metadata+: {
+        labels+: {
+          'pod-security.kubernetes.io/enforce': 'privileged',
+        },
+      },
+    },
+  ],
 }

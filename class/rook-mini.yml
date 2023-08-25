@@ -1,5 +1,16 @@
 parameters:
   kapitan:
+    dependencies:
+      - type: helm
+        source: ${rook_mini:charts:operator:source}
+        chart_name: rook-ceph
+        version: ${rook_mini:charts:operator:version}
+        output_path: ${_base_directory}/helmcharts/operator/${rook_mini:charts:operator:version}/
+      - type: helm
+        source: ${rook_mini:charts:cluster:source}
+        chart_name: rook-ceph-cluster
+        version: ${rook_mini:charts:cluster:version}
+        output_path: ${_base_directory}/helmcharts/cluster/${rook_mini:charts:operator:version}/
     compile:
       - input_paths:
           - ${_base_directory}/component/app.jsonnet
@@ -9,3 +20,31 @@ parameters:
           - ${_base_directory}/component/main.jsonnet
         input_type: jsonnet
         output_path: rook-mini/
+      # Helmchart
+      - input_paths:
+          - ${_base_directory}/helmcharts/operator/${rook_mini:charts:operator:version}
+        input_type: helm
+        output_path: rook-mini/10_helmchart
+        helm_values: ${rook_mini:helmValues:operator}
+        helm_params:
+          name: rook
+          namespace: ${rook_mini:namespace:operator}
+          dependency_update: true
+      - input_paths:
+          - ${_base_directory}/helmcharts/cluster/${rook_mini:charts:cluster:version}
+        input_type: helm
+        output_path: rook-mini/10_helmchart
+        helm_values: ${rook_mini:helmValues:cluster}
+        helm_params:
+          name: rook
+          namespace: ${rook_mini:namespace:cluster}
+          dependency_update: true
+  commodore:
+    postprocess:
+      filters:
+        - type: jsonnet
+          path: rook-mini/10_helmchart/rook-ceph-cluster/templates
+          filter: postprocess/fix_template.jsonnet
+        - type: jsonnet
+          path: rook-mini/10_helmchart/rook-ceph-cluster/templates
+          filter: postprocess/patch_template.jsonnet

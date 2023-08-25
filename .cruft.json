@@ -7,7 +7,7 @@
       "name": "Rook Ceph Mini",
       "slug": "rook-mini",
       "parameter_key": "rook_mini",
-      "test_cases": "defaults",
+      "test_cases": "defaults with-pools",
       "add_lib": "n",
       "add_pp": "n",
       "add_golden": "y",
