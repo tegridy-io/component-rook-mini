@@ -1,0 +1,4 @@
+parameters:
+  rook_mini:
+    =_metadata: {}
+    namespace: syn-rook-mini
