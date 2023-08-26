@@ -1,0 +1,47 @@
+allowVolumeExpansion: true
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: 'false'
+  name: ceph-file
+parameters:
+  clusterID: syn-rook-mini-cluster
+  csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/controller-expand-secret-namespace: syn-rook-mini-cluster
+  csi.storage.k8s.io/fstype: ext4
+  csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+  csi.storage.k8s.io/node-stage-secret-namespace: syn-rook-mini-cluster
+  csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+  csi.storage.k8s.io/provisioner-secret-namespace: syn-rook-mini-cluster
+  fsName: ceph-fs
+  pool: ceph-fs-data0
+provisioner: syn-rook-mini.cephfs.csi.ceph.com
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+---
+apiVersion: ceph.rook.io/v1
+kind: CephFilesystem
+metadata:
+  name: ceph-fs
+  namespace: syn-rook-mini-cluster
+spec:
+  dataPools:
+    - failureDomain: host
+      name: data0
+      replicated:
+        size: 3
+  metadataPool:
+    replicated:
+      size: 3
+  metadataServer:
+    activeCount: 1
+    activeStandby: true
+    priorityClassName: system-cluster-critical
+    resources:
+      limits:
+        cpu: null
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi

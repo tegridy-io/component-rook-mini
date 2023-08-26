@@ -1,4 +1,237 @@
 parameters:
   rook_mini:
     =_metadata: {}
-    namespace: syn-rook-mini
+
+    namespace:
+      operator: syn-rook-mini
+      cluster: syn-rook-mini-cluster
+
+    charts:
+      operator:
+        source: https://charts.rook.io/release
+        version: v1.12.2
+      cluster:
+        source: https://charts.rook.io/release
+        version: v1.12.2
+
+    storage:
+      clusterSpec:
+        useAllNodes: false
+        useAllDevices: false
+        config:
+          encryptedDevice: 'true'
+      blockPools: []
+      fileSystems: []
+      objectStores: []
+
+    helmValues:
+      operator:
+        monitoring:
+          enabled: true
+        pspEnable: false
+        resources:
+          limits:
+            cpu: null
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 512Mi
+        csi:
+          csiRBDProvisionerResource: |
+            - name : csi-provisioner
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 200m
+            - name : csi-resizer
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 200m
+            - name : csi-attacher
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 200m
+            - name : csi-snapshotter
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 200m
+            - name : csi-rbdplugin
+              resource:
+                requests:
+                  memory: 64Mi
+                  cpu: 25m
+                limits:
+                  memory: 1Gi
+                  cpu: 500m
+            - name : csi-omap-generator
+              resource:
+                requests:
+                  memory: 64Mi
+                  cpu: 25m
+                limits:
+                  memory: 1Gi
+                  cpu: 500m
+            - name : liveness-prometheus
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 100m
+          csiRBDPluginResource: |
+            - name : driver-registrar
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 100m
+            - name : csi-rbdplugin
+              resource:
+                requests:
+                  memory: 64Mi
+                  cpu: 25m
+                limits:
+                  memory: 1Gi
+                  cpu: 500m
+            - name : liveness-prometheus
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 100m
+          csiCephFSProvisionerResource: |
+            - name : csi-provisioner
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 200m
+            - name : csi-resizer
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 200m
+            - name : csi-attacher
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 200m
+            - name : csi-snapshotter
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 200m
+            - name : csi-cephfsplugin
+              resource:
+                requests:
+                  memory: 64Mi
+                  cpu: 25m
+                limits:
+                  memory: 1Gi
+                  cpu: 500m
+            - name : liveness-prometheus
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 100m
+          csiCephFSPluginResource: |
+            - name : driver-registrar
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 100m
+            - name : csi-cephfsplugin
+              resource:
+                requests:
+                  memory: 64Mi
+                  cpu: 25m
+                limits:
+                  memory: 1Gi
+                  cpu: 500m
+            - name : liveness-prometheus
+              resource:
+                requests:
+                  memory: 32Mi
+                  cpu: 10m
+                limits:
+                  memory: 256Mi
+                  cpu: 100m
+
+      cluster:
+        monitoring:
+          enabled: true
+        operatorNamespace: ${rook_mini:namespace:operator}
+        pspEnable: false
+        toolbox:
+          enabled: true
+        cephClusterSpec:
+          storage: ${rook_mini:storage:clusterSpec}
+          dashboard:
+            enabled: false
+            ssl: true
+          # Network configuration, see: https://github.com/rook/rook/blob/master/Documentation/CRDs/ceph-cluster-crd.md#network-configuration-settings
+          network:
+            provider: host
+          resources:
+            mon:
+              requests:
+                cpu: 50m
+                memory: 1500Mi
+              limits:
+                cpu: null
+                memory: 1500Mi
+            mgr:
+              requests:
+                cpu: 50m
+                memory: 750Mi
+              limits:
+                cpu: null
+                memory: 750Mi
+            osd:
+              requests:
+                cpu: 50m
+                #memory: 1500Mi
+                memory: 750Mi
+              limits:
+                cpu: null
+                memory: 1500Mi
+        cephBlockPools: ${rook_mini:storage:blockPools}
+        cephFileSystems: ${rook_mini:storage:fileSystems}
+        cephObjectStores: ${rook_mini:storage:objectStores}
