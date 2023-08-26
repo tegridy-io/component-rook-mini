@@ -1,0 +1,24 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app.kubernetes.io/created-by: helm
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: rook-ceph-operator
+    helm.sh/chart: rook-ceph-v1.12.2
+  name: csi-metrics
+  namespace: syn-rook-mini
+spec:
+  endpoints:
+    - interval: 5s
+      path: /metrics
+      port: csi-http-metrics
+    - interval: 5s
+      path: /metrics
+      port: csi-grpc-metrics
+  namespaceSelector:
+    matchNames:
+      - syn-rook-mini
+  selector:
+    matchLabels:
+      app: csi-metrics

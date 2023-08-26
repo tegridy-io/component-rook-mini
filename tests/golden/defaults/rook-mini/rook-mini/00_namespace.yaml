@@ -3,6 +3,7 @@ kind: Namespace
 metadata:
   annotations: {}
   labels:
+    monitoring.syn.tools/system: 'true'
     name: syn-rook-mini
     pod-security.kubernetes.io/enforce: privileged
   name: syn-rook-mini
@@ -12,6 +13,7 @@ kind: Namespace
 metadata:
   annotations: {}
   labels:
+    monitoring.syn.tools/system: 'true'
     name: syn-rook-mini-cluster
     pod-security.kubernetes.io/enforce: privileged
   name: syn-rook-mini-cluster

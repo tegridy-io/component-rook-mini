@@ -37,6 +37,10 @@ parameters:
             cpu: 50m
             memory: 512Mi
         csi:
+          enableGrpcMetrics: true
+          enableLiveness: true
+          serviceMonitor:
+            enabled: true
           csiRBDProvisionerResource: |
             - name : csi-provisioner
               resource:
@@ -197,6 +201,7 @@ parameters:
       cluster:
         monitoring:
           enabled: true
+          createPrometheusRules: true
         operatorNamespace: ${rook_mini:namespace:operator}
         pspEnable: false
         toolbox:
