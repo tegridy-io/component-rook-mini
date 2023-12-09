@@ -9,10 +9,10 @@ parameters:
     charts:
       operator:
         source: https://charts.rook.io/release
-        version: v1.12.2
+        version: v1.12.9
       cluster:
         source: https://charts.rook.io/release
-        version: v1.12.2
+        version: v1.12.9
 
     storage:
       clusterSpec:

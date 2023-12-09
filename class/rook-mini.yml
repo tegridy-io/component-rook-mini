@@ -43,8 +43,11 @@ parameters:
     postprocess:
       filters:
         - type: jsonnet
-          path: rook-mini/10_helmchart/rook-ceph-cluster/templates
-          filter: postprocess/fix_template.jsonnet
+          path: rook-mini/10_helmchart/rook-ceph/templates
+          filter: postprocess/fix_rook_template.jsonnet
         - type: jsonnet
           path: rook-mini/10_helmchart/rook-ceph-cluster/templates
-          filter: postprocess/patch_template.jsonnet
+          filter: postprocess/fix_cluster_template.jsonnet
+        - type: jsonnet
+          path: rook-mini/10_helmchart/rook-ceph-cluster/templates
+          filter: postprocess/patch_cluster_template.jsonnet
