@@ -2,6 +2,7 @@ local com = import 'lib/commodore.libjsonnet';
 
 local template_files = [
   'volumesnapshotclass',
+  'securityContextConstraints',
 ];
 
 local templates = [

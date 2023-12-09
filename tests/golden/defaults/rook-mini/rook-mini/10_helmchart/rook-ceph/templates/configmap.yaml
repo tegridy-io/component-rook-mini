@@ -230,8 +230,10 @@ data:
   ROOK_CSI_ENABLE_RBD: 'true'
   ROOK_CSI_IMAGE_PULL_POLICY: IfNotPresent
   ROOK_DISABLE_ADMISSION_CONTROLLER: 'true'
+  ROOK_ENABLE_DISCOVERY_DAEMON: 'false'
   ROOK_LOG_LEVEL: INFO
   ROOK_OBC_WATCH_OPERATOR_NAMESPACE: 'true'
 kind: ConfigMap
 metadata:
   name: rook-ceph-operator-config
+  namespace: syn-rook-mini
