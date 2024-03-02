@@ -1,3 +1,21 @@
+allowVolumeExpansion: true
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: 'false'
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: ceph-bucket
+  name: ceph-bucket
+parameters:
+  objectStoreName: ceph-objectstore
+  objectStoreNamespace: syn-rook-mini-cluster
+  region: eu-central-2
+provisioner: syn-rook-mini.ceph.rook.io/bucket
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+---
 apiVersion: ceph.rook.io/v1
 kind: CephObjectStore
 metadata:
