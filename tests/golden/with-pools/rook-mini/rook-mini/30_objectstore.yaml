@@ -1,31 +1,3 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-production
-  labels:
-    app.kubernetes.io/managed-by: commodore
-    app.kubernetes.io/name: ceph-objectstore
-  name: ceph-objectstore
-  namespace: syn-rook-mini-cluster
-spec:
-  ingressClassName: nginx
-  rules:
-    - host: objects.local
-      http:
-        paths:
-          - backend:
-              service:
-                name: rook-ceph-rgw-ceph-objectstore
-                port:
-                  number: 80
-            path: /
-            pathType: Prefix
-  tls:
-    - hosts:
-        - objects.local
-      secretName: ceph-objectstore-tls
----
 apiVersion: ceph.rook.io/v1
 kind: CephObjectStore
 metadata:
@@ -58,3 +30,31 @@ spec:
     replicated:
       size: 3
   preservePoolsOnDelete: true
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: ceph-objectstore
+  name: ceph-objectstore
+  namespace: syn-rook-mini-cluster
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: objects.local
+      http:
+        paths:
+          - backend:
+              service:
+                name: rook-ceph-rgw-ceph-objectstore
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - objects.local
+      secretName: ceph-objectstore-tls
