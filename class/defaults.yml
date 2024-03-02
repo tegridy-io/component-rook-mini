@@ -37,6 +37,12 @@ parameters:
     objectstore:
       enabled: false
       isDefault: false
+      ingress:
+        enabled: false
+        tls: true
+        class: nginx
+        url: objects.local
+        annotations: {}
       spec:
         metadataPool:
           failureDomain: host

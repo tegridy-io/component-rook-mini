@@ -30,6 +30,10 @@ parameters:
 
     objectstore:
       enabled: true
+      ingress:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-production
 
     filesystem:
       enabled: true
