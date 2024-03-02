@@ -89,6 +89,36 @@ local objectstore = [
   //   } + com.makeMergeable(params.objectstore.parameters),
   //   provisioner: '%s.ceph.rook.io/bucket' % params.namespace.operator,
   // },
+  kube._Object('ceph.rook.io/v1', 'CephObjectStore', 'ceph-objectstore') {
+    metadata: {
+      labels: {
+        'app.kubernetes.io/managed-by': 'commodore',
+        'app.kubernetes.io/name': 'ceph-objectstore',
+      },
+      namespace: params.namespace.cluster,
+      name: 'ceph-objectstore',
+    },
+    spec: {
+      allowUsersInNamespaces: if std.length(params.objectstore.allowedNamespaces) > 0 then params.objectstore.allowedNamespaces else [ '*' ],
+      preservePoolsOnDelete: true,
+      gateway: {
+        port: 80,
+        hostNetwork: false,
+        resources: {
+          limits: {
+            memory: '1Gi',
+          },
+          requests: {
+            cpu: '100m',
+            memory: '512Mi',
+          },
+        },
+        instances: 2,
+        priorityClassName: 'system-cluster-critical',
+      },
+    } + com.makeMergeable(params.objectstore.spec),
+  },
+] + if params.objectstore.ingress.enabled then [
   local ingress = params.objectstore.ingress;
   kube._Object('networking.k8s.io/v1', 'Ingress', 'ceph-objectstore') {
     metadata: {
@@ -123,36 +153,7 @@ local objectstore = [
       } ],
     },
   },
-  kube._Object('ceph.rook.io/v1', 'CephObjectStore', 'ceph-objectstore') {
-    metadata: {
-      labels: {
-        'app.kubernetes.io/managed-by': 'commodore',
-        'app.kubernetes.io/name': 'ceph-objectstore',
-      },
-      namespace: params.namespace.cluster,
-      name: 'ceph-objectstore',
-    },
-    spec: {
-      allowUsersInNamespaces: if std.length(params.objectstore.allowedNamespaces) > 0 then params.objectstore.allowedNamespaces else [ '*' ],
-      preservePoolsOnDelete: true,
-      gateway: {
-        port: 80,
-        hostNetwork: false,
-        resources: {
-          limits: {
-            memory: '1Gi',
-          },
-          requests: {
-            cpu: '100m',
-            memory: '512Mi',
-          },
-        },
-        instances: 2,
-        priorityClassName: 'system-cluster-critical',
-      },
-    } + com.makeMergeable(params.objectstore.spec),
-  },
-];
+] else [];
 
 local filesystem = [
   local class = params.filesystem.data[name].class;
@@ -208,5 +209,5 @@ local filesystem = [
   ],
   [if params.blockpool.enabled then '20_blockpool']: blockpool,
   [if params.objectstore.enabled then '30_objectstore']: objectstore,
-  [if params.filesystem.enabled then '30_filesystem']: filesystem,
+  [if params.filesystem.enabled then '40_filesystem']: filesystem,
 }
