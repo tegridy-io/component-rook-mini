@@ -133,6 +133,7 @@ local objectstore = [
       name: 'ceph-objectstore',
     },
     spec: {
+      allowUsersInNamespaces: if std.length(params.objectstore.allowedNamespaces) > 0 then params.objectstore.allowedNamespaces else [ '*' ],
       preservePoolsOnDelete: true,
       gateway: {
         port: 80,

@@ -55,6 +55,7 @@ default::
 objectstore:
   enabled: false
   isDefault: false
+  allowedNamespaces: []
   ingress:
     enabled: false
     tls: true
