@@ -12,7 +12,7 @@ parameters:
   objectStoreName: ceph-objectstore
   objectStoreNamespace: syn-rook-mini-cluster
   region: eu-central-2
-provisioner: syn-rook-mini.ceph.rook.io/bucket
+provisioner: syn-rook-mini-cluster.ceph.rook.io/bucket
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 ---

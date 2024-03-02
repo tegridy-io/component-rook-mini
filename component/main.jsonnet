@@ -87,7 +87,7 @@ local objectstore = [
       objectStoreName: 'ceph-objectstore',
       objectStoreNamespace: params.namespace.cluster,
     } + com.makeMergeable(params.objectstore.parameters),
-    provisioner: '%s.ceph.rook.io/bucket' % params.namespace.operator,
+    provisioner: '%s.ceph.rook.io/bucket' % params.namespace.cluster,
   },
   kube._Object('ceph.rook.io/v1', 'CephObjectStore', 'ceph-objectstore') {
     metadata: {
