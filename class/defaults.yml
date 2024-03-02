@@ -14,15 +14,59 @@ parameters:
         source: https://charts.rook.io/release
         version: v1.12.9
 
-    storage:
-      clusterSpec:
+    cluster:
+      storage:
         useAllNodes: false
         useAllDevices: false
         config:
           encryptedDevice: 'true'
-      blockPools: []
-      fileSystems: []
-      objectStores: []
+
+    blockpool:
+      enabled: false
+      isDefault: true
+      fsType: ext4
+      reclaimPolicy: Delete
+      spec:
+        failureDomain: host
+        replicated:
+          size: 3
+      parameters:
+        imageFeatures: layering
+        imageFormat: '2'
+
+    objectstore:
+      enabled: false
+      isDefault: false
+      spec:
+        metadataPool:
+          failureDomain: host
+          replicated:
+            size: 3
+        dataPool:
+          failureDomain: host
+          erasureCoded:
+            dataChunks: 2
+            codingChunks: 1
+      parameters:
+        region: eu-central-2
+
+    filesystem:
+      enabled: false
+      metadata:
+        failureDomain: host
+        replicated:
+          size: 3
+      server: {}
+      data:
+        data0:
+          spec:
+            failureDomain: host
+            replicated:
+              size: 3
+          class: ceph-file
+          isDefault: false
+          fsType: ext4
+          reclaimPolicy: Delete
 
     helmValues:
       operator:
@@ -207,7 +251,7 @@ parameters:
         toolbox:
           enabled: true
         cephClusterSpec:
-          storage: ${rook_mini:storage:clusterSpec}
+          storage: ${rook_mini:cluster:storage}
           dashboard:
             enabled: false
             ssl: true
@@ -237,6 +281,6 @@ parameters:
               limits:
                 cpu: null
                 memory: 1500Mi
-        cephBlockPools: ${rook_mini:storage:blockPools}
-        cephFileSystems: ${rook_mini:storage:fileSystems}
-        cephObjectStores: ${rook_mini:storage:objectStores}
+        cephBlockPools: []    # ${rook_mini:storage:blockPools}
+        cephFileSystems: []   # ${rook_mini:storage:fileSystems}
+        cephObjectStores: []  # ${rook_mini:storage:objectStores}

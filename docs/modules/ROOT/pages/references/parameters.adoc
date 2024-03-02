@@ -2,18 +2,120 @@
 
 The parent key for all of the following parameters is `rook_mini`.
 
-== `namespace`
+== `cluster`
 
 [horizontal]
-type:: string
-default:: `syn-rook-mini`
-
-The namespace in which to deploy this component.
-
-
-== Example
-
-[source,yaml]
+type:: dictionary
+default::
++
+[source, yaml]
 ----
-namespace: example-namespace
+cluster:
+  storage:
+    useAllNodes: false
+    useAllDevices: false
+    config:
+      encryptedDevice: 'true'
+----
+
+Rook-Ceph cluster configuration.
+
+== `blockpool`
+
+[horizontal]
+type:: dictionary
+default::
++
+[source, yaml]
+----
+blockpool:
+  enabled: false
+  isDefault: true
+  fsType: ext4
+  reclaimPolicy: Delete
+  spec:
+    failureDomain: host
+    replicated:
+      size: 3
+  parameters:
+    imageFeatures: layering
+    imageFormat: '2'
+----
+
+Create blockpool, see https://rook.io/docs/rook/latest-release/Getting-Started/example-configurations/#block-devices[Rook Documentation] for further insights.
+
+== `objectstore`
+
+[horizontal]
+type:: dictionary
+default::
++
+[source, yaml]
+----
+objectstore:
+  enabled: false
+  isDefault: false
+  spec:
+    metadataPool:
+      failureDomain: host
+      replicated:
+        size: 3
+    dataPool:
+      failureDomain: host
+      erasureCoded:
+        dataChunks: 2
+        codingChunks: 1
+  parameters:
+    region: eu-central-2
+----
+
+Create objectstore, see https://rook.io/docs/rook/latest-release/Getting-Started/example-configurations/#object-storage[Rook Documentation] for further insights.
+
+== `filesystem`
+
+[horizontal]
+type:: dictionary
+default::
++
+[source, yaml]
+----
+filesystem:
+  enabled: false
+  metadata:
+    failureDomain: host
+    replicated:
+      size: 3
+  server: {}
+  data:
+    data0:
+      spec:
+        failureDomain: host
+        replicated:
+          size: 3
+      class: ceph-file
+      isDefault: false
+      fsType: ext4
+      reclaimPolicy: Delete
+----
+
+Create filesystem, see https://rook.io/docs/rook/latest-release/Getting-Started/example-configurations/#shared-filesystem[Rook Documentation] for further insights.
+
+
+=== Example
+
+[source, yaml]
+----
+filesystem:
+  enabled: true
+  data:
+    ~data0: {}
+    data1:
+      spec:
+        failureDomain: host
+        replicated:
+          size: 3
+      class: ceph-file
+      isDefault: true
+      fsType: xfs
+      reclaimPolicy: Retain
 ----

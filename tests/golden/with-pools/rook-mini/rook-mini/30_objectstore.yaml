@@ -1,0 +1,30 @@
+apiVersion: ceph.rook.io/v1
+kind: CephObjectStore
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: ceph-objectstore
+  name: ceph-objectstore
+  namespace: syn-rook-mini-cluster
+spec:
+  dataPool:
+    erasureCoded:
+      codingChunks: 1
+      dataChunks: 2
+    failureDomain: host
+  gateway:
+    instances: 2
+    port: 80
+    priorityClassName: system-cluster-critical
+    resources:
+      limits:
+        cpu: null
+        memory: 1Gi
+      requests:
+        cpu: 100m
+        memory: 512Mi
+  metadataPool:
+    failureDomain: host
+    replicated:
+      size: 3
+  preservePoolsOnDelete: true

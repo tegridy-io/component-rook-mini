@@ -6,5 +6,13 @@ local argocd = import 'lib/argocd.libjsonnet';
 local app = argocd.App('rook-mini', params.namespace.operator);
 
 {
-  'rook-mini': app,
+  'rook-mini': app {
+    spec+: {
+      syncPolicy+: {
+        syncOptions+: [
+          'ServerSideApply=true',
+        ],
+      },
+    },
+  },
 }
