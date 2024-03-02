@@ -82,13 +82,13 @@ local blockpool = [
 ];
 
 local objectstore = [
-  // storageClass('ceph-object', params.objectstore + { type: 'object' }) {
-  //   parameters: {
-  //     objectStoreName: 'ceph-objectstore',
-  //     objectStoreNamespace: params.namespace.cluster,
-  //   } + com.makeMergeable(params.objectstore.parameters),
-  //   provisioner: '%s.ceph.rook.io/bucket' % params.namespace.operator,
-  // },
+  storageClass('ceph-bucket', params.objectstore { type: 'object' }) {
+    parameters: {
+      objectStoreName: 'ceph-objectstore',
+      objectStoreNamespace: params.namespace.cluster,
+    } + com.makeMergeable(params.objectstore.parameters),
+    provisioner: '%s.ceph.rook.io/bucket' % params.namespace.operator,
+  },
   kube._Object('ceph.rook.io/v1', 'CephObjectStore', 'ceph-objectstore') {
     metadata: {
       labels: {

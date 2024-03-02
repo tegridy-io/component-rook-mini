@@ -37,6 +37,7 @@ parameters:
     objectstore:
       enabled: false
       isDefault: false
+      reclaimPolicy: Delete
       allowedNamespaces: []
       ingress:
         enabled: false
