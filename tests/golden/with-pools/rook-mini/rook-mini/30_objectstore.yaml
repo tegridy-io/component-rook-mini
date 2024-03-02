@@ -35,6 +35,8 @@ metadata:
   name: ceph-objectstore
   namespace: syn-rook-mini-cluster
 spec:
+  allowUsersInNamespaces:
+    - '*'
   dataPool:
     erasureCoded:
       codingChunks: 1
