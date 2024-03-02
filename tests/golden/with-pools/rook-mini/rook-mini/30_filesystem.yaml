@@ -47,7 +47,6 @@ spec:
     priorityClassName: system-cluster-critical
     resources:
       limits:
-        cpu: null
         memory: 2Gi
       requests:
         cpu: 500m

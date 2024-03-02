@@ -12,17 +12,23 @@ local hasPrometheus = std.member(inv.applications, 'prometheus');
 // Namespaces
 local namespaces = [
   kube.Namespace(params.namespace.operator) {
-    metadata+: {
-      labels+: {
+    metadata: {
+      labels: {
         'pod-security.kubernetes.io/enforce': 'privileged',
+        'app.kubernetes.io/managed-by': 'commodore',
+        name: params.namespace.operator,
       },
+      name: params.namespace.operator,
     },
   },
   kube.Namespace(params.namespace.cluster) {
-    metadata+: {
-      labels+: {
+    metadata: {
+      labels: {
         'pod-security.kubernetes.io/enforce': 'privileged',
+        'app.kubernetes.io/managed-by': 'commodore',
+        name: params.namespace.cluster,
       },
+      name: params.namespace.cluster,
     },
   },
 ];
@@ -83,6 +89,40 @@ local objectstore = [
   //   } + com.makeMergeable(params.objectstore.parameters),
   //   provisioner: '%s.ceph.rook.io/bucket' % params.namespace.operator,
   // },
+  local ingress = params.objectstore.ingress;
+  kube._Object('networking.k8s.io/v1', 'Ingress', 'ceph-objectstore') {
+    metadata: {
+      annotations: ingress.annotations,
+      labels: {
+        'app.kubernetes.io/managed-by': 'commodore',
+        'app.kubernetes.io/name': 'ceph-objectstore',
+      },
+      namespace: params.namespace.cluster,
+      name: 'ceph-objectstore',
+    },
+    spec: {
+      ingressClassName: ingress.class,
+      rules: [ {
+        host: ingress.url,
+        http: {
+          paths: [ {
+            backend: {
+              service: {
+                name: 'rook-ceph-rgw-ceph-objectstore',
+                port: { number: 80 },
+              },
+            },
+            path: '/',
+            pathType: 'Prefix',
+          } ],
+        },
+      } ],
+      [if ingress.tls then 'tls']: [ {
+        hosts: [ ingress.url ],
+        secretName: 'ceph-objectstore-tls',
+      } ],
+    },
+  },
   kube._Object('ceph.rook.io/v1', 'CephObjectStore', 'ceph-objectstore') {
     metadata: {
       labels: {
@@ -96,9 +136,9 @@ local objectstore = [
       preservePoolsOnDelete: true,
       gateway: {
         port: 80,
+        hostNetwork: false,
         resources: {
           limits: {
-            cpu: null,
             memory: '1Gi',
           },
           requests: {
@@ -147,7 +187,6 @@ local filesystem = [
         priorityClassName: 'system-cluster-critical',
         resources: {
           limits: {
-            cpu: null,
             memory: '2Gi',
           },
           requests: {
