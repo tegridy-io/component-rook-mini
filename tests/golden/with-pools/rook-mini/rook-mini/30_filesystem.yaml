@@ -4,6 +4,9 @@ kind: StorageClass
 metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: 'false'
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: ceph-file
   name: ceph-file
 parameters:
   clusterID: syn-rook-mini-cluster
@@ -23,6 +26,9 @@ volumeBindingMode: Immediate
 apiVersion: ceph.rook.io/v1
 kind: CephFilesystem
 metadata:
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: ceph-fs
   name: ceph-fs
   namespace: syn-rook-mini-cluster
 spec:
@@ -32,6 +38,7 @@ spec:
       replicated:
         size: 3
   metadataPool:
+    failureDomain: host
     replicated:
       size: 3
   metadataServer:

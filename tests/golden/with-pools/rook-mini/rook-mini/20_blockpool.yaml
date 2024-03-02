@@ -4,6 +4,9 @@ kind: StorageClass
 metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: 'true'
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: ceph-block
   name: ceph-block
 parameters:
   clusterID: syn-rook-mini-cluster
@@ -24,6 +27,9 @@ volumeBindingMode: Immediate
 apiVersion: ceph.rook.io/v1
 kind: CephBlockPool
 metadata:
+  labels:
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: ceph-blockpool
   name: ceph-blockpool
   namespace: syn-rook-mini-cluster
 spec:
