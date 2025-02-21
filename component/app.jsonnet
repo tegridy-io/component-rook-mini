@@ -5,8 +5,12 @@ local argocd = import 'lib/argocd.libjsonnet';
 
 local app = argocd.App('rook-mini', params.namespace.operator);
 
+local appPath =
+  local project = std.get(std.get(app, 'spec', {}), 'project', 'syn');
+  if project == 'syn' then 'apps' else 'apps-%s' % project;
+
 {
-  'rook-mini': app {
+  ['%s/rook-mini' % appPath]: app {
     spec+: {
       syncPolicy+: {
         syncOptions+: [
