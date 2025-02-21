@@ -1,6 +1,7 @@
 parameters:
   rook_mini:
-    =_metadata: {}
+    =_metadata:
+      multi_tenant: true
 
     namespace:
       operator: syn-rook-mini
